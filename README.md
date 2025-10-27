@@ -20,70 +20,40 @@ Spacelift Intent is an MCP (Model Context Protocol) server that provides AI assi
 - State management
 - Provider schema discovery
 
-## Infrastructure Components
-
-The deployed application consists of:
-
-1. **S3 Bucket** (`aws_s3_bucket`)
-   - Name: `snake-game-demo-joey`
-   - Region: `us-east-1`
-   - Force destroy enabled for easy cleanup
-
-2. **Website Configuration** (`aws_s3_bucket_website_configuration`)
-   - Index document: `index.html`
-   - Configured for static website hosting
-
-3. **Public Access Configuration** (`aws_s3_bucket_public_access_block`)
-   - All public access restrictions disabled
-   - Allows public website hosting
-
-4. **Bucket Policy** (`aws_s3_bucket_policy`)
-   - Public read access for all objects
-   - Allows browser access to game files
-
-5. **Game File** (`aws_s3_object`)
-   - `index.html` - Single self-contained HTML file with inlined CSS (Dracula-themed styling) and JavaScript (complete snake game logic)
-
 ## Replicating This Demo
 
-### Basic Demo (No Policy Enforcement)
+**Phase 1: Setup Intent Project**
+
+1. Clone this repository to your local machine: `git clone git@github.com:spacelift-solutions/intent.git`
+    - cd into its directory before continuing (if you dont do this, the mcp server wont work correctly with claude code)
+2. Create a new Spacelift Intent Project in your Spacelift account (note its id for later)
+3. Create the `block-public-s3-websites.rego` **intent** policy to your Spacelift account.
+4. Attach the policy to your Intent Project.
+5. Setup claude with your Spacelift Intent Server ex. `claude mcp add -t http spacelift https://spacelift-solutions.app.spacelift.io/intent/mcp`
+6. Ensure the MCP server is authenticated by starting a new claude code session and running `/mcp`. 
+
+**Phase 2: Start Demo and Demonstrate Blocking**
 
 1. Start a new Claude Code session
-2. The AI will read CLAUDE.md automatically (global instructions, just to avoid some minor pitfalls of AI)
-3. Connect to the Spacelift Intent MCP server
-4. Request: "Use Spacelift Intent Project `{your-project-id}`"
-5. Request: "Let's deploy my snake game to Amazon S3"
-6. Follow the natural conversation flow
-7. The AI will avoid the pitfalls from the original development
-
-### Advanced Demo (With Policy Enforcement)
-
-This demonstrates Spacelift Intent's policy enforcement capabilities:
-
-**Phase 1: Attach Policy and Demonstrate Blocking**
-
-1. Start a new Claude Code session
-2. Request: "Use Spacelift Intent Project `{your-project-id}`"
-3. Request: "Create a policy from the file `block-public-s3-websites.rego` with the name 'Block Public S3 Websites' and description 'Prevents public S3 website hosting for security compliance'"
-4. Request: "Let's deploy my snake game to Amazon S3"
-5. Observe: The AI will successfully create the S3 bucket, but policy violations will block:
+2. Request: "Use Spacelift Intent project `{your-intent-project-id}`"
+3. Request: "Let's deploy my snake game to Amazon S3"
+4. Observe: The AI will successfully create the S3 bucket, but policy violations will block:
    - `aws_s3_bucket_website_configuration` - Public hosting blocked
    - `aws_s3_bucket_public_access_block` - Public access blocked (all 4 settings must be `true`)
    - `aws_s3_bucket_policy` - Public bucket policy blocked (Principal: "*" not allowed)
-6. The deployment will fail with clear policy violation messages
+5. The deployment will fail with clear policy violation messages
 
-**Phase 2: Remove Policy and Deploy Successfully**
+**Phase 3: Remove Policy and Deploy Successfully**
 
-7. Request: "List all policies"
-8. Request: "Delete the policy '{policy-id}' we just created"
-9. Request: "Now let's deploy the snake game to S3"
-10. Observe: All resources create successfully without policy blocking
-11. The snake game is now publicly accessible
+1. Remove the policy from your Intent Project in Spacelift
+2. Request: "I've removed the policy, lets try deploying it now."
+3. Observe: All resources create successfully without policy blocking
+4. The snake game is now publicly accessible
 
-**Phase 3: Cleanup**
+**Phase 4: Cleanup**
 
-12. Request: "Delete all resources in my Intent project"
-13. Confirm with: `CONFIRM`
+1. Request: "Delete all resources in my Intent project"
+2. Confirm with: `CONFIRM`
 
 ### Key Demo Highlights
 

@@ -77,3 +77,6 @@ When encountering errors:
 - Use the TodoWrite tool to show progress tracking
 - Add dependencies after creating resources to demonstrate dependency management
 - Avoid lengthy schema analysis in responses - do the analysis, then create the resource
+
+## Memories
+- You need to add the snake game contents inline with the aws_s3_object resource, intent does NOT have access to the local file system.
