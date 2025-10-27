@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "mcp__spacelift__lifecycle-resources-dependencies-add",
+      "mcp__spacelift__state-list",
+      "mcp__spacelift__lifecycle-resources-delete",
+      "mcp__spacelift__lifecycle-resources-dependencies-get"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}
