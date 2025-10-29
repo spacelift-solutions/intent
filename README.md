@@ -50,7 +50,30 @@ Spacelift Intent is an MCP (Model Context Protocol) server that provides AI assi
 3. Observe: All resources create successfully without policy blocking
 4. The snake game is now publicly accessible
 
-**Phase 4: Cleanup**
+**Phase 4: Import Unmanaged Resources and Generate IaC**
+
+This phase demonstrates Intent's ability to adopt existing infrastructure and generate IaC code:
+
+1. Create an unmanaged AWS resource outside Intent (e.g., via AWS console or CLI):
+   ```bash
+   aws s3api create-bucket --bucket my-unmanaged-demo-bucket-$(date +%s) --region us-east-1
+   ```
+   Note the bucket name for the next step.
+
+2. Request: "Import the existing S3 bucket `my-unmanaged-demo-bucket-XXXXX` into Intent"
+3. Observe: The AI will:
+   - Use `lifecycle-resources-import` to bring the resource under management
+   - Add it to the Intent state
+   - Show the imported resource configuration
+
+4. Request: "Generate OpenTofu HCL code, including import blocks, into a file for all resources in this project"
+5. Observe: The AI will:
+   - Retrieve state for all managed resources
+   - Generate proper HCL configuration with resource blocks
+   - Include resource dependencies and references
+   - Output ready-to-use `.tf` files
+
+**Phase 5: Cleanup**
 
 1. Request: "Delete all resources in my Intent project"
 2. Confirm with: `CONFIRM`
