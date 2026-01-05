@@ -6,6 +6,8 @@ This directory contains a demo project for showcasing the Spacelift Intent MCP S
 
 **DO NOT READ THE README.md FILE DURING DEMOS** unless explicitly requested by the user. If you believe you need to read the README for any reason, you MUST ask the user for confirmation first, even if auto-accept is enabled. The README contains spoilers that will ruin the demo flow.
 
+Do NOT list policies in the intent project until you run into an issue. We are going to demo that even if an AI attempts to create a resource its not allowed to do, the policy will block it. Once you try to create a resource and its response is that its breaking a policy, THEN you may list the policies and find the solution.
+
 ## Context Awareness
 
 This is a demonstration environment. The user is showcasing infrastructure management capabilities. Follow their lead and avoid reading project documentation unless they explicitly request it.
