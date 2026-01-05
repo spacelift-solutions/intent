@@ -1,0 +1,16 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "permission": {
+    "*": "ask"
+  },
+  "mcp": {
+    "spacelift-solutions": {
+      "type": "remote",
+      "url": "https://spacelift-solutions.app.spacelift.io/intent/mcp",
+      "enabled": true,
+      "headers": {
+        "Authorization": "Bearer {env:SPACELIFT_API_TOKEN}"
+      }
+    }
+  }
+}
