@@ -63,6 +63,16 @@ For public S3 website hosting:
 - Bucket policy must allow public read access with Principal: "*"
 - Resources must be created in the correct order: bucket → public access block → bucket policy
 
+## Azure Resource Creation (azurerm)
+
+When running the demo on Azure instead of AWS:
+
+- **Resource ordering**: resource group → storage account → static website → blob. The static website must be enabled before uploading to the `$web` container.
+- **Static website hosting** is a standalone resource: `azurerm_storage_account_static_website` (set `storage_account_id` and `index_document`, e.g. `index.html`). This is the resource the governance policy blocks — it's the Azure analog of `aws_s3_bucket_website_configuration`.
+- **Public access** on the storage account is controlled by `allow_nested_items_to_be_public`. Leave it `false` (the default) for private; the policy blocks setting it to `true`.
+- **Blob uploads**: use `azurerm_storage_blob` with `type = "Block"`, `content_type = "text/html"`, and **`source_content`** for the inline HTML — Intent has no local filesystem, so `source_content` is the Azure analog of inlining the S3 object. Upload to the `$web` container (`storage_container_name = "$web"`).
+- The game is served at the storage account's `primary_web_endpoint` once static website hosting is enabled.
+
 ## Working with the Intent MCP Server
 
 The MCP server handles planning and applying internally. You don't need to run separate plan/apply commands - the lifecycle tools do this automatically.
@@ -81,4 +91,4 @@ When encountering errors:
 - Avoid lengthy schema analysis in responses - do the analysis, then create the resource
 
 ## Memories
-- You need to add the snake game contents inline with the aws_s3_object resource, intent does NOT have access to the local file system.
+- You need to add the snake game contents inline, intent does NOT have access to the local file system. On AWS use the `aws_s3_object` content; on Azure use `azurerm_storage_blob` `source_content`.

@@ -1,6 +1,6 @@
 # Spacelift Intent MCP Server Demo - Snake Game
 
-This project demonstrates the capabilities of the Spacelift Intent MCP Server by deploying a fully functional browser-based Snake game to AWS S3 static website hosting - entirely through AI-driven infrastructure management.
+This project demonstrates the capabilities of the Spacelift Intent MCP Server by deploying a fully functional browser-based Snake game to static website hosting - entirely through AI-driven infrastructure management. The demo is **cloud-agnostic**: run it on **AWS S3** or **Azure Blob Storage** (the same Snake game, deployed and governed the same way on either cloud).
 
 ## Project Overview
 
@@ -27,7 +27,9 @@ Spacelift Intent is an MCP (Model Context Protocol) server that provides AI assi
 1. Clone this repository to your local machine: `git clone git@github.com:spacelift-solutions/intent.git`
     - cd into its directory before continuing (if you dont do this, the mcp server wont work correctly with claude code)
 2. Create a new Spacelift Intent Project in your Spacelift account (note its id for later)
-3. Create the `block-public-s3-websites.rego` **intent** policy to your Spacelift account.
+3. Create the **intent** policy for your target cloud in your Spacelift account:
+   - AWS: `block-public-s3-websites.rego`
+   - Azure: `block-public-azure-static-websites.rego`
 4. Attach the policy to your Intent Project.
 5. Setup claude with your Spacelift Intent Server ex. `claude mcp add -t http spacelift https://spacelift-solutions.app.spacelift.io/intent/mcp`
 6. Ensure the MCP server is authenticated by starting a new claude code session and running `/mcp`. 
@@ -77,6 +79,36 @@ This phase demonstrates Intent's ability to adopt existing infrastructure and ge
 
 1. Request: "Delete all resources in my Intent project"
 2. Confirm with: `CONFIRM`
+
+## Azure Variant
+
+The phases above use AWS. To run the same demo on **Azure Blob Storage static website hosting**, attach `block-public-azure-static-websites.rego` instead and use these requests. Everything else (project setup, removing the policy, import, IaC generation, cleanup) is identical.
+
+**Phase 2 (Azure): Start Demo and Demonstrate Blocking**
+
+1. Request: "Use Spacelift Intent project `{your-intent-project-id}`"
+2. Request: "Let's deploy my snake game to Azure Blob Storage static website hosting"
+3. Observe: The AI creates the resource group and storage account, but policy violations block:
+   - `azurerm_storage_account_static_website` - Public static website hosting blocked
+   - `azurerm_storage_account` with `allow_nested_items_to_be_public = true` - Public blob access blocked
+4. The deployment fails with clear policy violation messages
+
+**Phase 3 (Azure): Remove Policy and Deploy Successfully**
+
+1. Remove the policy from your Intent Project in Spacelift
+2. Request: "I've removed the policy, lets try deploying it now."
+3. Observe: All resources create successfully; the game is served at the storage account's `primary_web_endpoint`
+
+**Phase 4 (Azure): Import Unmanaged Resources and Generate IaC**
+
+1. Create an unmanaged Azure resource outside Intent, e.g.:
+   ```bash
+   az storage account create --name unmanageddemo$RANDOM --resource-group <rg> --location eastus
+   ```
+2. Request: "Import the existing storage account `<name>` into Intent"
+3. Request: "Generate OpenTofu HCL code, including import blocks, into a file for all resources in this project"
+
+Phases 1 and 5 (setup and cleanup) are the same as the AWS track.
 
 ### Key Demo Highlights
 
